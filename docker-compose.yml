@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  # VROOM (Vehicle Routing Open-source Optimization Machine)
+  # Computes optimal inspection routes with time windows, capacity & skills
+  vroom:
+    image: ghcr.io/vroom-project/vroom-docker:latest
+    container_name: regulatory_vroom
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - VROOM_ROUTER=osrm
+      - VROOM_LOG=/conf
+    volumes:
+      - ./docker/vroom:/conf
+    networks:
+      - regos-network
+
+  # PostgreSQL 16 with PostGIS 3.4 for spatial & regulatory jurisdiction data
+  postgis:
+    image: postgis/postgis:16-3.4
+    container_name: regulatory_postgis
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: regulatory_os
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+    volumes:
+      - postgis_data:/var/lib/postgresql/data
+      - ./docker/init-db:/docker-entrypoint-initdb.d
+    networks:
+      - regos-network
+
+  # Redis for fast caching and pub/sub events
+  redis:
+    image: redis:7-alpine
+    container_name: regulatory_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - regos-network
+
+  # Neo4j Graph Database for Regulatory & Dependency Ontologies
+  neo4j:
+    image: neo4j:5-community
+    container_name: regulatory_neo4j
+    restart: unless-stopped
+    ports:
+      - "7474:7474" # HTTP UI
+      - "7687:7687" # Bolt
+    environment:
+      - NEO4J_AUTH=neo4j/regulatoryos123
+      - NEO4J_PLUGINS=["apoc"]
+    volumes:
+      - neo4j_data:/data
+    networks:
+      - regos-network
+
+networks:
+  regos-network:
+    driver: bridge
+
+volumes:
+  postgis_data:
+  redis_data:
+  neo4j_data:
