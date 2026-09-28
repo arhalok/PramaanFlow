@@ -1,0 +1,24 @@
+{
+  "name": "regulatory-os-maharashtra",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Maharashtra Jurisdiction Intelligence & Statutory Regulatory OS Platform",
+  "scripts": {
+    "dev": "node scripts/run.js dev",
+    "start": "node scripts/run.js start",
+    "build": "node scripts/run.js build",
+    "setup": "npm --prefix frontend install",
+    "postinstall": "npm --prefix frontend install"
+  },
+  "keywords": [
+    "maharashtra",
+    "jurisdiction",
+    "postgis",
+    "h3",
+    "midc",
+    "mpcb",
+    "regulatory-os"
+  ],
+  "author": "",
+  "license": "MIT"
+}

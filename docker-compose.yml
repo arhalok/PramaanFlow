@@ -1,6 +1,24 @@
 version: '3.8'
 
 services:
+  # Next.js Web Application & Maharashtra Geospatial Platform
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: regulatory_web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://postgres:postgrespassword@postgis:5432/regulatory_os
+      - VROOM_URL=http://vroom:3000
+    depends_on:
+      - postgis
+    networks:
+      - regos-network
+
   # VROOM (Vehicle Routing Open-source Optimization Machine)
   # Computes optimal inspection routes with time windows, capacity & skills
   vroom:

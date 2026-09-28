@@ -5,7 +5,7 @@ import { analyzeMaharashtraLocation } from "@/lib/maharashtra-geospatial";
 export const maxDuration = 60;
 
 // Tool execution mapping
-async function executeTool(toolName: string, args: any) {
+async function executeTool(toolName: string, args: any): Promise<any> {
   if (toolName === "analyzeMaharashtraJurisdiction") {
     const lat = args.lat || 18.7612;
     const lng = args.lng || 73.8542;
@@ -248,7 +248,7 @@ ${fp.mandatoryPriorClearances.map((c: string) => `• ⚠️ ${c}`).join("\n")}`
         lng = 78.9842;
       }
 
-      const res = await executeTool("analyzeMaharashtraJurisdiction", { lat, lng });
+      const res = analyzeMaharashtraLocation(lat, lng);
 
       responseText = `### 🏛️ Maharashtra Jurisdiction Intelligence Analysis
 

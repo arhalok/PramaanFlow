@@ -1,0 +1,37 @@
+{
+  "name": "Regulatory OS - Maharashtra Geospatial Intelligence",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-20-bullseye",
+  
+  "forwardPorts": [3000, 5432, 3001],
+  
+  "portsAttributes": {
+    "3000": {
+      "label": "Regulatory OS Platform",
+      "onAutoForward": "openBrowser"
+    },
+    "5432": {
+      "label": "PostGIS Database",
+      "onAutoForward": "silent"
+    },
+    "3001": {
+      "label": "VROOM Router",
+      "onAutoForward": "silent"
+    }
+  },
+
+  "postCreateCommand": "npm run setup",
+  "postStartCommand": "npm run dev",
+
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      },
+      "extensions": [
+        "bradlc.vscode-tailwindcss",
+        "esbenp.prettier-vscode",
+        "ms-azuretools.vscode-docker"
+      ]
+    }
+  }
+}
