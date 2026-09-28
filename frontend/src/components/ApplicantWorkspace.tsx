@@ -169,7 +169,7 @@ export function ApplicantWorkspace({
             }`}
           >
             <Compass className="h-3.5 w-3.5" />
-            <span>Site Regulatory Fingerprint (H3)</span>
+            <span>Jurisdiction Intelligence &amp; H3</span>
           </button>
 
           <button

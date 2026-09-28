@@ -1,10 +1,17 @@
 import { INITIAL_PROJECT, INITIAL_INSPECTIONS, BOTTLENECK_DATA } from "@/lib/regulatory-data";
 import { optimizeInspectionRoute } from "@/lib/vroom-router";
+import { analyzeMaharashtraLocation } from "@/lib/maharashtra-geospatial";
 
 export const maxDuration = 60;
 
 // Tool execution mapping
 async function executeTool(toolName: string, args: any) {
+  if (toolName === "analyzeMaharashtraJurisdiction") {
+    const lat = args.lat || 18.7612;
+    const lng = args.lng || 73.8542;
+    return analyzeMaharashtraLocation(lat, lng);
+  }
+
   if (toolName === "getSiteRegulatoryFingerprint") {
     return {
       district: args.district || "Jaipur",
@@ -218,15 +225,63 @@ ${fp.preClearedClearances.map((c: string) => `• ✓ ${c}`).join("\n")}
 
 #### Mandatory Prior Consents:
 ${fp.mandatoryPriorClearances.map((c: string) => `• ⚠️ ${c}`).join("\n")}`;
+    } else if (
+      lastMessage.includes("maharashtra") ||
+      lastMessage.includes("chakan") ||
+      lastMessage.includes("kurkumbh") ||
+      lastMessage.includes("midc") ||
+      lastMessage.includes("mpcb") ||
+      lastMessage.includes("sro") ||
+      lastMessage.includes("jurisdiction")
+    ) {
+      // Determine coordinates based on query
+      let lat = 18.7612;
+      let lng = 73.8542;
+      if (lastMessage.includes("kurkumbh")) {
+        lat = 18.3972;
+        lng = 74.5244;
+      } else if (lastMessage.includes("ttc") || lastMessage.includes("navi mumbai")) {
+        lat = 19.0822;
+        lng = 73.0185;
+      } else if (lastMessage.includes("butibori") || lastMessage.includes("nagpur")) {
+        lat = 20.9254;
+        lng = 78.9842;
+      }
+
+      const res = await executeTool("analyzeMaharashtraJurisdiction", { lat, lng });
+
+      responseText = `### 🏛️ Maharashtra Jurisdiction Intelligence Analysis
+
+**Location:** \`${res.location.formattedAddress}\` (Lat: ${res.location.lat}, Lng: ${res.location.lng})
+
+#### 1. Administrative Jurisdiction:
+- **District:** ${res.administrative?.district || "Pune"} (Collectorate: ${res.administrative?.district} Collectorate)
+- **Taluka:** ${res.administrative?.taluka || "Khed"}
+- **Local Body:** ${res.localAuthority?.name || "Local Panchayat"} (${res.localAuthority?.jurisdictionBasis || "Administrative"})
+
+#### 2. Industrial Authority & Zoning (MIDC):
+- **Inside Notified MIDC:** **${res.industrial.insideMidc ? "YES (" + res.industrial.industrialArea + ")" : "NO (Non-MIDC Land)"}**
+- **Special Planning Authority (SPA):** ${res.industrial.specialPlanningAuthority ? "MIDC designated under Sec 40(1) MRTP Act 1966" : "PMRDA / Collectorate"}
+- **Statutory NA Exemption:** ${res.industrial.insideMidc ? "✓ Section 42A MLRC 1966 (Pre-cleared without Collector NA)" : "Standard Section 44 MLRC NA Required"}
+
+#### 3. Environmental Authority (MPCB):
+- **Regional Office:** ${res.environmental?.regionalOffice} (Jog Center, Wakdewadi, Pune)
+- **Sub-Regional Office (SRO):** **${res.environmental?.subRegionalOffice}**
+- **Legal Basis:** MPCB Gazette Notification BO/P&L/B-328 (2020)
+
+#### 4. Applicable Aaple Sarkar (RTS Act) Clearances:
+${res.applicableServices.slice(0, 4).map((s: any) => `• **${s.name}** — ${s.authority} (SLA: ${s.slaDays}d)${s.isExempted ? " [EXEMPTED]" : ""}`).join("\n")}
+
+*Note: Fully grounded via deterministic PostGIS point-in-polygon queries with verified legal provenance.*`;
     } else {
       responseText = `### Regulatory Copilot
 Hello! I am your AI regulatory assistant for Regulatory OS.
 
 Here are quick actions you can take:
-1. **"What approvals are required for my project?"** — Explains required statutory NOCs and dependencies.
-2. **"Optimize today's inspections with VROOM"** — Computes optimal tour routes, time windows, and fuel savings.
-3. **"Show departmental bottlenecks"** — Identifies delayed queues and SLA risks via process mining.
-4. **"Check Site Regulatory Fingerprint"** — Analyzes industrial zoning, environmental buffers, and groundwater rules.`;
+1. **"Analyze Maharashtra jurisdiction for Chakan / Kurkumbh / TTC"** — Resolves MIDC SPA, MPCB SRO, and RTS clearances.
+2. **"What approvals are required for my project?"** — Explains required statutory NOCs and dependencies.
+3. **"Optimize today's inspections with VROOM"** — Computes optimal tour routes, time windows, and fuel savings.
+4. **"Show departmental bottlenecks"** — Identifies delayed queues and SLA risks via process mining.`;
     }
 
     return streamFormattedText(responseText);

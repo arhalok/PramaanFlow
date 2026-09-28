@@ -33,11 +33,11 @@ export const JUDGE_DEMO_STEPS: JudgeStep[] = [
   },
   {
     id: 2,
-    title: "2. Geospatial Regulatory Fingerprint (H3)",
+    title: "2. Maharashtra Jurisdiction Intelligence (PostGIS + H3)",
     persona: "applicant",
     subTab: "gis",
-    description: "PostGIS + H3 spatial overlay determines Sitapura Phase IV jurisdiction, triggering 12 approvals & 4 inspections.",
-    actionHint: "Drop pin or switch industrial parks to watch regulatory intensity shift"
+    description: "PostGIS point-in-polygon engine resolves Chakan MIDC, Khed Taluka, MPCB SRO Pimpri-Chinchwad, and 8 Aaple Sarkar RTS services with verified legal provenance.",
+    actionHint: "Drop pin or switch Maharashtra industrial corridors to watch statutory authority shift"
   },
   {
     id: 3,
