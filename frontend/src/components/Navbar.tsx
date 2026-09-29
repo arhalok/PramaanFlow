@@ -1,11 +1,11 @@
 "use client";
 
 import React from "react";
-import { ShieldCheck, Bot, Building2, Landmark, Compass, Sparkles } from "lucide-react";
+import { ShieldCheck, Bot, Building2, Landmark, Compass, Sparkles, Map } from "lucide-react";
 
 interface NavbarProps {
-  activeTab: "applicant" | "government" | "inspector";
-  setActiveTab: (tab: "applicant" | "government" | "inspector") => void;
+  activeTab: "applicant" | "government" | "inspector" | "gis-map";
+  setActiveTab: (tab: "applicant" | "government" | "inspector" | "gis-map") => void;
   onOpenCopilot: () => void;
 }
 
@@ -22,38 +22,48 @@ export function Navbar({ activeTab, setActiveTab, onOpenCopilot }: NavbarProps) 
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-extrabold text-lg text-slate-900 tracking-tight">Regulatory OS</span>
+              <span className="font-extrabold text-lg text-slate-900 tracking-tight">PramaanFlow</span>
               <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200">
-                Govt of Rajasthan / NSWS
+                Maharashtra · NSWS
               </span>
             </div>
             <p className="text-xs text-slate-500 hidden sm:block">
-              Intelligent Regulatory Orchestration &amp; Inspection Engine
+              Location → Jurisdiction → Authority → Service → Action
             </p>
           </div>
         </div>
 
         {/* Persona Tabs Navigation */}
-        <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 shadow-inner">
+        <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 shadow-inner gap-0.5">
+          {/* GIS Map — primary tab */}
+          <button
+            onClick={() => setActiveTab("gis-map")}
+            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${activeTab === "gis-map"
+                ? "bg-teal-600 text-white shadow-sm"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
+              }`}
+          >
+            <Map className="h-3.5 w-3.5" />
+            <span>Location Intelligence</span>
+          </button>
+
           <button
             onClick={() => setActiveTab("applicant")}
-            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
-              activeTab === "applicant"
+            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${activeTab === "applicant"
                 ? "bg-white text-teal-700 shadow-sm border border-slate-200/80"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
-            }`}
+              }`}
           >
             <Building2 className="h-3.5 w-3.5 text-teal-600" />
-            <span>Applicant Twin</span>
+            <span>Applicant Workspace</span>
           </button>
 
           <button
             onClick={() => setActiveTab("government")}
-            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
-              activeTab === "government"
+            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${activeTab === "government"
                 ? "bg-white text-indigo-700 shadow-sm border border-slate-200/80"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
-            }`}
+              }`}
           >
             <Landmark className="h-3.5 w-3.5 text-indigo-600" />
             <span>Govt Command</span>
@@ -61,14 +71,13 @@ export function Navbar({ activeTab, setActiveTab, onOpenCopilot }: NavbarProps) 
 
           <button
             onClick={() => setActiveTab("inspector")}
-            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
-              activeTab === "inspector"
+            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${activeTab === "inspector"
                 ? "bg-white text-emerald-700 shadow-sm border border-slate-200/80"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
-            }`}
+              }`}
           >
             <Compass className="h-3.5 w-3.5 text-emerald-600" />
-            <span>Inspector &amp; VROOM</span>
+            <span>Inspector</span>
           </button>
         </div>
 

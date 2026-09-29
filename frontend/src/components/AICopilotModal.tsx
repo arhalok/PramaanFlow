@@ -192,9 +192,8 @@ Ask a question or select one of the suggested prompts below.`
           {messages.map((m) => (
             <div
               key={m.id}
-              className={`flex gap-3 text-xs leading-relaxed ${
-                m.role === "user" ? "justify-end" : "justify-start"
-              }`}
+              className={`flex gap-3 text-xs leading-relaxed ${m.role === "user" ? "justify-end" : "justify-start"
+                }`}
             >
               {m.role === "assistant" && (
                 <div className="h-7 w-7 rounded-lg bg-teal-50 text-teal-700 border border-teal-200 flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
@@ -203,11 +202,10 @@ Ask a question or select one of the suggested prompts below.`
               )}
 
               <div
-                className={`max-w-[85%] rounded-2xl p-4 shadow-sm ${
-                  m.role === "user"
+                className={`max-w-[85%] rounded-2xl p-4 shadow-sm ${m.role === "user"
                     ? "bg-teal-600 text-white rounded-br-none"
                     : "bg-slate-50 border border-slate-200 text-slate-800 rounded-bl-none"
-                }`}
+                  }`}
               >
                 <div className="prose prose-xs max-w-none space-y-2 whitespace-pre-wrap">
                   {m.content}

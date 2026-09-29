@@ -193,16 +193,15 @@ export function InspectorWorkspace() {
           {/* If routeResult exists, show optimized chronological itinerary */}
           {routeResult ? (
             <div className="space-y-3">
-              {routeResult.itinerary.map((stop, idx) => {
+              {routeResult.itinerary.map((stop: any, idx: number) => {
                 const isDepot = stop.status.includes("DEPOT");
                 return (
                   <div
                     key={idx}
-                    className={`p-4 rounded-xl border transition-all ${
-                      isDepot
+                    className={`p-4 rounded-xl border transition-all ${isDepot
                         ? "border-slate-200 bg-slate-50 text-slate-500"
                         : "border-slate-200 hover:border-teal-500 bg-white shadow-sm cursor-pointer"
-                    }`}
+                      }`}
                     onClick={() => {
                       if (!isDepot) {
                         const job = inspections.find((j) => j.id === stop.jobId);
@@ -255,11 +254,10 @@ export function InspectorWorkspace() {
                   <div
                     key={job.id}
                     onClick={() => setSelectedInspection(job)}
-                    className={`p-4 rounded-xl cursor-pointer transition-all border ${
-                      isSelected
+                    className={`p-4 rounded-xl cursor-pointer transition-all border ${isSelected
                         ? "border-teal-600 bg-teal-50/40 shadow-sm"
                         : "border-slate-200 hover:border-slate-300 bg-white shadow-sm"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div>
@@ -268,13 +266,12 @@ export function InspectorWorkspace() {
                             {job.projectName}
                           </h3>
                           <span
-                            className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                              job.priority === "CRITICAL"
+                            className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${job.priority === "CRITICAL"
                                 ? "bg-rose-50 text-rose-700 border-rose-200"
                                 : job.priority === "HIGH"
-                                ? "bg-amber-50 text-amber-800 border-amber-200"
-                                : "bg-teal-50 text-teal-700 border-teal-200"
-                            }`}
+                                  ? "bg-amber-50 text-amber-800 border-amber-200"
+                                  : "bg-teal-50 text-teal-700 border-teal-200"
+                              }`}
                           >
                             {job.priority} PRIORITY
                           </span>
@@ -325,11 +322,10 @@ export function InspectorWorkspace() {
               </div>
               <button
                 onClick={handleVerifyGPS}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm ${
-                  gpsVerified
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm ${gpsVerified
                     ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                     : "bg-teal-600 text-white hover:bg-teal-700"
-                }`}
+                  }`}
               >
                 {gpsVerified ? "✓ In Geo-Fence" : "Verify GPS"}
               </button>
@@ -352,13 +348,12 @@ export function InspectorWorkspace() {
                       <input
                         type="checkbox"
                         checked={isChecked}
-                        onChange={() => {}}
+                        onChange={() => { }}
                         className="mt-0.5 rounded border-slate-300 text-teal-600 focus:ring-0"
                       />
                       <span
-                        className={`text-xs ${
-                          isChecked ? "text-emerald-700 font-medium line-through" : "text-slate-700"
-                        }`}
+                        className={`text-xs ${isChecked ? "text-emerald-700 font-medium line-through" : "text-slate-700"
+                          }`}
                       >
                         {item.label}
                       </span>
@@ -382,11 +377,10 @@ export function InspectorWorkspace() {
               <button
                 onClick={handleSubmitInspection}
                 disabled={submitted}
-                className={`w-full py-2.5 rounded-xl text-xs font-bold transition-all shadow-sm ${
-                  submitted
+                className={`w-full py-2.5 rounded-xl text-xs font-bold transition-all shadow-sm ${submitted
                     ? "bg-emerald-600 text-white cursor-default"
                     : "bg-teal-600 text-white hover:bg-teal-700"
-                }`}
+                  }`}
               >
                 {submitted
                   ? "✓ Digitally Signed & Synced to Raj Nivesh"

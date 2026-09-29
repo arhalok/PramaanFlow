@@ -58,7 +58,7 @@ async function executeTool(toolName: string, args: any): Promise<any> {
       co2SavedKg: route.co2SavedKg,
       stops: route.itinerary.length,
       itinerarySummary: route.itinerary.map(
-        (i) => `${i.arrivalTime} - ${i.projectName} (${i.distanceFromPrevKm} km)`
+        (i: any) => `${i.arrivalTime} - ${i.projectName} (${i.distanceFromPrevKm} km)`
       )
     };
   }

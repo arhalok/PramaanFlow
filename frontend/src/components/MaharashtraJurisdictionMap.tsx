@@ -33,9 +33,13 @@ import {
   LocationAnalysisResult,
   MAHARASHTRA_GIS_LAYERS,
   AuthorityFeature,
+  ApplicableAuthority,
   Point2D,
   computeH3CellInfo
 } from "@/lib/maharashtra-geospatial";
+import { LocationIntelligencePanel } from "@/components/LocationIntelligencePanel";
+import { ExplainWhyModal } from "@/components/ExplainWhyModal";
+import { ServicesList } from "@/components/ServicesList";
 
 interface MaharashtraJurisdictionMapProps {
   onLocationSelected?: (result: LocationAnalysisResult) => void;
@@ -51,7 +55,7 @@ export const MAHARASHTRA_PRESETS = [
     lng: 73.8542,
     district: "Pune",
     taluka: "Khed",
-    badge: "Auto Hub • MIDC SPA",
+    badge: "Auto Hub Ã¢â‚¬Â¢ MIDC SPA",
     sector: "Automotive & Heavy Engineering"
   },
   {
@@ -61,7 +65,7 @@ export const MAHARASHTRA_PRESETS = [
     lng: 74.5244,
     district: "Pune",
     taluka: "Daund",
-    badge: "Chemical/Pharma • Red Cat",
+    badge: "Chemical/Pharma Ã¢â‚¬Â¢ Red Cat",
     sector: "Bulk Drugs & Specialty Chemicals"
   },
   {
@@ -71,7 +75,7 @@ export const MAHARASHTRA_PRESETS = [
     lng: 73.0185,
     district: "Thane",
     taluka: "Thane",
-    badge: "MMR • High Density",
+    badge: "MMR Ã¢â‚¬Â¢ High Density",
     sector: "Chemicals & Electronics"
   },
   {
@@ -81,7 +85,7 @@ export const MAHARASHTRA_PRESETS = [
     lng: 78.9842,
     district: "Nagpur",
     taluka: "Nagpur Rural",
-    badge: "Vidarbha • 5-Star MIDC",
+    badge: "Vidarbha Ã¢â‚¬Â¢ 5-Star MIDC",
     sector: "Textiles & Engineering"
   },
   {
@@ -91,7 +95,7 @@ export const MAHARASHTRA_PRESETS = [
     lng: 74.3789,
     district: "Pune",
     taluka: "Shirur",
-    badge: "Outside MIDC • Gram Panchayat",
+    badge: "Outside MIDC Ã¢â‚¬Â¢ Gram Panchayat",
     sector: "Agro Processing (PMRDA/Collector)"
   }
 ];
@@ -131,6 +135,7 @@ export function MaharashtraJurisdictionMap({
   const [isAiReasoningOpen, setIsAiReasoningOpen] = useState<boolean>(false);
   const [isRightPanelExpanded, setIsRightPanelExpanded] = useState<boolean>(true);
   const [searchInputValue, setSearchInputValue] = useState<string>("");
+  const [explainAuthority, setExplainAuthority] = useState<ApplicableAuthority | null>(null);
 
   const svgRef = useRef<SVGSVGElement | null>(null);
 
@@ -281,7 +286,7 @@ export function MaharashtraJurisdictionMap({
               <h2 className="text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
                 <span>Maharashtra Jurisdiction Intelligence Engine</span>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono font-semibold">
-                  PostGIS • SRID:4326
+                  PostGIS Ã¢â‚¬Â¢ SRID:4326
                 </span>
               </h2>
               <p className="text-xs text-slate-500">
@@ -504,14 +509,14 @@ export function MaharashtraJurisdictionMap({
                   <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${loadingAnalysis ? "bg-amber-400" : "bg-emerald-400"}`}></span>
                   <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${loadingAnalysis ? "bg-amber-500" : "bg-emerald-500"}`}></span>
                 </span>
-                <span className="font-bold text-slate-800 text-[11px] font-mono">
-                  {loadingAnalysis ? "ANALYZING JURISDICTION VIA POSTGIS..." : "POSTGIS POINT-IN-POLYGON ACTIVE"}
+                <span className="font-bold text-slate-800 text-[11px]">
+                  {loadingAnalysis ? "Analysing locationÃ¢â‚¬Â¦" : analysisResult ? `Ã°Å¸â€œÂ ${analysisResult.location.formattedAddress}` : "Click on map to analyse"}
                 </span>
               </div>
 
               <div className="flex items-center gap-2">
                 <span className="text-[11px] font-mono text-slate-600 px-2 py-0.5 rounded bg-slate-100 border border-slate-200">
-                  LAT: {selectedCoords.lat.toFixed(4)}°N, LNG: {selectedCoords.lng.toFixed(4)}°E
+                  LAT: {selectedCoords.lat.toFixed(4)}Ã‚Â°N, LNG: {selectedCoords.lng.toFixed(4)}Ã‚Â°E
                 </span>
                 <button
                   onClick={() => setIsRightPanelExpanded(!isRightPanelExpanded)}
@@ -828,463 +833,95 @@ export function MaharashtraJurisdictionMap({
               </div>
 
               <div className="font-mono text-[10px] text-slate-400">
-                PROJECTION: WGS84 EPSG:4326 • POSTGIS ENGINE
+                PROJECTION: WGS84 EPSG:4326 Ã¢â‚¬Â¢ POSTGIS ENGINE
               </div>
             </div>
           </div>
         </div>
 
-        {/* RIGHT COLUMN: LOCATION INTELLIGENCE PANEL (Sections 12, 13, 14, 15) */}
+        {/* RIGHT COLUMN: LOCATION INTELLIGENCE PANEL Ã¢â‚¬â€ entrepreneur-focused */}
         {isRightPanelExpanded && (
-          <div className="lg:col-span-4 space-y-4">
-            <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-5">
-              
-              {/* Panel Header */}
-              <div className="flex items-start justify-between gap-2 pb-3 border-b border-slate-100">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[10px] font-bold font-mono px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200">
-                      POSTGIS SPATIAL ANALYSIS
-                    </span>
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                      RESOLVED
-                    </span>
-                  </div>
-                  <h3 className="text-sm font-bold text-slate-900 leading-snug">
-                    {analysisResult?.location.formattedAddress || "Selected Maharashtra Location"}
-                  </h3>
-                </div>
-
-                <button
-                  onClick={() => setIsRightPanelExpanded(false)}
-                  className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-colors"
-                  title="Collapse Panel"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-
-              {/* SECTION A: ADMINISTRATIVE JURISDICTION */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
-                    <Landmark className="h-3.5 w-3.5 text-slate-600" /> Administrative
-                  </span>
-                  <span className="text-[10px] font-mono text-slate-400">
-                    {analysisResult?.administrative?.sourceType || "official_geometry"}
-                  </span>
-                </div>
-
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 grid grid-cols-2 gap-2 text-xs">
-                  <div>
-                    <span className="text-[10px] text-slate-400 uppercase font-semibold">State / Revenue</span>
-                    <p className="font-bold text-slate-800">{analysisResult?.administrative?.state || "Maharashtra"}</p>
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-slate-400 uppercase font-semibold">District</span>
-                    <p className="font-bold text-slate-800">{analysisResult?.administrative?.district || "Pune"}</p>
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-slate-400 uppercase font-semibold">Taluka / Tehsil</span>
-                    <p className="font-bold text-slate-800">{analysisResult?.administrative?.taluka || "Khed"}</p>
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-slate-400 uppercase font-semibold">Local Governance</span>
-                    <p className="font-semibold text-slate-800 truncate" title={analysisResult?.localAuthority?.name}>
-                      {analysisResult?.localAuthority?.name || "Gram Panchayat"}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* SECTION B: INDUSTRIAL JURISDICTION (MIDC) */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
-                    <Building className="h-3.5 w-3.5 text-teal-600" /> Industrial Status (MIDC)
-                  </span>
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                    analysisResult?.industrial.insideMidc
-                      ? "bg-teal-50 text-teal-700 border border-teal-200"
-                      : "bg-slate-100 text-slate-600"
-                  }`}>
-                    {analysisResult?.industrial.insideMidc ? "INSIDE NOTIFIED MIDC" : "OUTSIDE MIDC"}
-                  </span>
-                </div>
-
-                <div className="p-3 rounded-xl bg-teal-50/40 border border-teal-200/80 space-y-2 text-xs">
-                  {analysisResult?.industrial.insideMidc ? (
-                    <>
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <p className="font-bold text-slate-900">{analysisResult.industrial.industrialArea}</p>
-                          <span className="text-[11px] text-slate-500">
-                            Region: {analysisResult.industrial.midcRegion} • {analysisResult.industrial.executiveEngineerDivision}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="pt-2 border-t border-teal-100 flex items-center justify-between text-[11px]">
-                        <span className="text-slate-600 font-medium">Special Planning Authority (SPA):</span>
-                        <span className="font-bold text-teal-700">Sec 40(1) MRTP Act</span>
-                      </div>
-
-                      <div className="flex items-center justify-between text-[11px]">
-                        <span className="text-slate-600 font-medium">Sec 42A MLRC NA Conversion:</span>
-                        <span className="font-bold text-emerald-700 flex items-center gap-1">
-                          <Check className="h-3 w-3" /> Statutorily Exempted
-                        </span>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="text-slate-600 text-xs py-1">
-                      Location lies outside notified MIDC industrial estates. Regular Revenue Collector NA permission (Sec 44 MLRC) &amp; PMRDA/Local Body building permissions apply.
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* SECTION C: ENVIRONMENTAL JURISDICTION (MPCB) */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
-                    <Shield className="h-3.5 w-3.5 text-emerald-600" /> Environmental (MPCB)
-                  </span>
-                  <span className="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                    Gazette BO/P&amp;L/B-328
-                  </span>
-                </div>
-
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5 text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-500 font-medium">Regional Office:</span>
-                    <span className="font-bold text-slate-800">{analysisResult?.environmental?.regionalOffice}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-500 font-medium">Sub-Regional Office (SRO):</span>
-                    <span className="font-bold text-teal-700">{analysisResult?.environmental?.subRegionalOffice}</span>
-                  </div>
-                  <p className="text-[10px] text-slate-400 pt-1 border-t border-slate-200/60 leading-tight">
-                    Office Address: {analysisResult?.environmental?.officeAddress}
-                  </p>
-                </div>
-              </div>
-
-              {/* SECTION D: NEARBY PHYSICAL INFRASTRUCTURE (OSM) */}
-              <div className="space-y-2">
-                <span className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
-                  <Navigation className="h-3.5 w-3.5 text-blue-600" /> Nearby Physical Context (OSM)
-                </span>
-
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
-                  {analysisResult?.nearbyContext.highways.slice(0, 1).map((h, i) => (
-                    <div key={i} className="flex items-center justify-between">
-                      <span className="text-slate-600 truncate">{h.name}:</span>
-                      <span className="font-bold text-slate-900 font-mono">{h.distanceKm} km</span>
-                    </div>
-                  ))}
-                  {analysisResult?.nearbyContext.waterBodies.slice(0, 1).map((w, i) => (
-                    <div key={i} className="flex items-center justify-between">
-                      <span className="text-slate-600 truncate">{w.name}:</span>
-                      <span className="font-bold text-slate-900 font-mono">{w.distanceKm} km</span>
-                    </div>
-                  ))}
-                  {analysisResult?.nearbyContext.railways.slice(0, 1).map((r, i) => (
-                    <div key={i} className="flex items-center justify-between">
-                      <span className="text-slate-600 truncate">{r.name}:</span>
-                      <span className="font-bold text-slate-900 font-mono">{r.distanceKm} km</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* SECTION E: IDENTIFIED STATUTORY AUTHORITIES */}
-              <div className="space-y-2">
-                <span className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center justify-between">
-                  <span>Applicable Authorities ({analysisResult?.applicableAuthorities.length || 0})</span>
-                  <span className="text-[10px] text-slate-400 font-normal">Deterministic PostGIS</span>
-                </span>
-
-                <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
-                  {analysisResult?.applicableAuthorities.map((auth) => (
-                    <div
-                      key={auth.id}
-                      className="p-2 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-between text-xs"
-                    >
-                      <div className="flex items-center gap-2">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-teal-600 shrink-0" />
-                        <div>
-                          <p className="font-bold text-slate-800 text-[11px] leading-tight">{auth.name}</p>
-                          <span className="text-[10px] text-slate-500">{auth.role}</span>
-                        </div>
-                      </div>
-                      <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-white border border-slate-200 text-slate-500 shrink-0">
-                        {auth.sourceType === "official_geometry" ? "GEO" : "TEXT-DERIVED"}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* ACTIONS: VIEW SERVICES & AI STATUTORY REASONING */}
-              <div className="pt-2 border-t border-slate-100 space-y-2">
-                <button
-                  onClick={() => setIsServicesModalOpen(true)}
-                  className="w-full py-2.5 px-4 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors shadow-xs"
-                >
-                  <FileCheck className="h-4 w-4" />
-                  <span>View Applicable Services ({analysisResult?.applicableServices.length || 0} RTS Clearances)</span>
-                  <ArrowRight className="h-3.5 w-3.5 ml-auto" />
-                </button>
-
-                <button
-                  onClick={() => setIsAiReasoningOpen(true)}
-                  className="w-full py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors border border-slate-200"
-                >
-                  <Sparkles className="h-3.5 w-3.5 text-teal-600" />
-                  <span>Why do these authorities apply? (AI Explanation)</span>
-                </button>
-              </div>
-
-              {/* DATA SOURCE PROVENANCE BADGE (Section 15) */}
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-[10px] text-slate-500 space-y-1.5">
-                <div className="flex items-center justify-between font-bold text-slate-700">
-                  <span className="flex items-center gap-1">
-                    <Database className="h-3 w-3 text-teal-600" /> Government Provenance
-                  </span>
-                  <span className="text-emerald-700 font-semibold">Verified Authoritative</span>
-                </div>
-                <p className="leading-snug">
-                  Derived from Maharashtra Aaple Sarkar (RTS Act), MIDC GIS Gazette, and MPCB Notification BO/P&amp;L/B-328.
-                </p>
-                <div className="flex items-center gap-2 pt-1 font-mono text-[9px] text-slate-400">
-                  <span>H3 RES 8: {analysisResult?.h3.cell.substring(0, 10)}...</span>
-                  <span>•</span>
-                  <span>SRID: 4326</span>
-                </div>
-              </div>
-
+          <div className="lg:col-span-4">
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden" style={{minHeight: '560px'}}>
+              <LocationIntelligencePanel
+                result={analysisResult}
+                loading={loadingAnalysis}
+                onExplainAuthority={(auth) => setExplainAuthority(auth)}
+                onViewServices={() => setIsServicesModalOpen(true)}
+              />
             </div>
           </div>
         )}
-
       </div>
 
-      {/* 3. MODAL: APPLICABLE SERVICES & APPROVALS (Aaple Sarkar / RTS Act 2015) (Section 17) */}
-      {isServicesModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            
-            {/* Modal Header */}
-            <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200 font-mono">
-                    MAHARASHTRA RIGHT TO PUBLIC SERVICES ACT, 2015
-                  </span>
-                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    Aaple Sarkar Single Window
-                  </span>
-                </div>
-                <h3 className="text-base font-bold text-slate-900">
-                  Applicable Clearances &amp; Statutory Approvals
-                </h3>
-                <p className="text-xs text-slate-500">
-                  Legally matched to {analysisResult?.location.formattedAddress}
-                </p>
-              </div>
-
-              <button
-                onClick={() => setIsServicesModalOpen(false)}
-                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            {/* Modal Content: Services Table */}
-            <div className="p-5 overflow-y-auto space-y-3">
-              <div className="text-xs text-slate-600 bg-teal-50/50 border border-teal-200/60 p-3 rounded-xl">
-                <span className="font-bold text-teal-800">Statutory Notice: </span>
-                Services listed below are legally evaluated based on exact point-in-polygon jurisdiction. Approvals marked as{" "}
-                <span className="font-semibold text-emerald-700">Exempted</span> are pre-cleared by statute (e.g. MLRC Sec 42A within MIDC).
-              </div>
-
-              <div className="space-y-3">
-                {analysisResult?.applicableServices.map((svc) => (
-                  <div
-                    key={svc.id}
-                    className={`p-4 rounded-xl border transition-all ${
-                      svc.isExempted
-                        ? "bg-slate-50/80 border-slate-200 opacity-80"
-                        : "bg-white border-slate-200 hover:border-teal-300 shadow-xs"
-                    }`}
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-                      <div className="space-y-1 flex-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">
-                            {svc.id}
-                          </span>
-                          <span className="text-xs font-semibold text-slate-500">{svc.department}</span>
-                          <span className="text-slate-300">•</span>
-                          <span className="text-xs text-slate-600 font-medium">{svc.authority}</span>
-                        </div>
-
-                        <h4 className="text-sm font-bold text-slate-900">{svc.name}</h4>
-                        <p className="text-xs text-slate-600">{svc.reasonMatched}</p>
-
-                        <div className="pt-2 flex items-center gap-3 text-[11px] text-slate-500 flex-wrap">
-                          <span className="font-medium text-slate-700">Act: {svc.statutoryAct}</span>
-                          <span>•</span>
-                          <span className="flex items-center gap-1 font-semibold text-teal-700 font-mono">
-                            <Clock className="h-3 w-3" /> Statutory SLA: {svc.slaDays} Days
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Right Action & Exemption Tag */}
-                      <div className="shrink-0 flex sm:flex-col items-end justify-between gap-2">
-                        {svc.isExempted ? (
-                          <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
-                            <Check className="h-3.5 w-3.5" /> Statutorily Exempted
-                          </span>
-                        ) : (
-                          <a
-                            href={svc.officialUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="px-3 py-1.5 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 text-xs font-semibold flex items-center gap-1.5 transition-colors"
-                          >
-                            <span>Official Portal</span>
-                            <ExternalLink className="h-3 w-3" />
-                          </a>
-                        )}
-                        <span className="text-[10px] text-slate-400">RTS Notified</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="p-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between text-xs text-slate-500">
-              <span>Source: Government of Maharashtra Right to Services (RTS) Portal</span>
-              <button
-                onClick={() => setIsServicesModalOpen(false)}
-                className="px-4 py-1.5 rounded-lg bg-slate-800 text-white font-semibold text-xs hover:bg-slate-900 transition-colors"
-              >
-                Close
-              </button>
-            </div>
-
-          </div>
-        </div>
+      {/* MODALS */}
+      {isServicesModalOpen && analysisResult && (
+        <ServicesList result={analysisResult} onClose={() => setIsServicesModalOpen(false)} />
       )}
 
-      {/* 4. MODAL: GEMINI / AI STATUTORY REASONING (Section 16) */}
+      {explainAuthority && (
+        <ExplainWhyModal
+          authority={explainAuthority}
+          locationAddress={analysisResult?.location.formattedAddress || "Selected location"}
+          onClose={() => setExplainAuthority(null)}
+        />
+      )}
+
+      {/* Legacy AI Reasoning Modal */}
       {isAiReasoningOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-2xl w-full flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-2xl w-full flex flex-col overflow-hidden">
             <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-teal-50/40">
               <div className="flex items-center gap-2.5">
                 <span className="p-2 rounded-xl bg-teal-100 text-teal-800">
                   <Sparkles className="h-5 w-5" />
                 </span>
                 <div>
-                  <h3 className="text-base font-bold text-slate-900">
-                    Statutory Authority Grounding
-                  </h3>
-                  <p className="text-xs text-slate-500">
-                    Deterministic legal derivation based on PostGIS boundary analysis
-                  </p>
+                  <h3 className="text-base font-bold text-slate-900">Why do these authorities apply?</h3>
+                  <p className="text-xs text-slate-500">Based on official GIS boundary analysis Ã¢â‚¬â€ not AI guesswork</p>
                 </div>
               </div>
-
-              <button
-                onClick={() => setIsAiReasoningOpen(false)}
-                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
-              >
+              <button onClick={() => setIsAiReasoningOpen(false)} className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors">
                 <X className="h-5 w-5" />
               </button>
             </div>
-
             <div className="p-5 space-y-4 text-xs text-slate-700 leading-relaxed">
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
-                <span className="font-bold text-slate-900 text-xs">Spatial Resolution Grounding:</span>
-                <p>
-                  Target coordinate ({selectedCoords.lat.toFixed(4)}°N, {selectedCoords.lng.toFixed(4)}°E) was evaluated against Maharashtra PostGIS layers.
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                <span className="font-bold text-slate-900 text-xs">Location analysed:</span>
+                <p>{selectedCoords.lat.toFixed(4)}Ã‚Â°N, {selectedCoords.lng.toFixed(4)}Ã‚Â°E Ã¢â€ â€™ {analysisResult?.location.formattedAddress}</p>
+              </div>
+              <div className="p-3 rounded-xl border border-slate-200 bg-white">
+                <h4 className="font-bold text-teal-800 mb-1 flex items-center gap-1.5">
+                  <CheckCircle2 className="h-4 w-4 text-teal-600" />
+                  MIDC Industrial Status
+                </h4>
+                <p className="text-slate-600">
+                  {analysisResult?.industrial.insideMidc
+                    ? `Your location falls inside the notified boundary of ${analysisResult.industrial.industrialArea}. Under Section 40(1) MRTP Act 1966, MIDC is the Special Planning Authority here.`
+                    : "Your location is outside notified MIDC estates. Regular NA conversion (Sec 44 MLRC) and PMRDA/Local Body approvals apply."}
                 </p>
               </div>
-
-              <div className="space-y-3">
-                <div className="p-3 rounded-xl border border-slate-200 bg-white">
-                  <h4 className="font-bold text-teal-800 mb-1 flex items-center gap-1.5">
-                    <CheckCircle2 className="h-4 w-4 text-teal-600" />
-                    1. Why MIDC Special Planning Authority Applies:
-                  </h4>
-                  <p className="text-slate-600">
-                    {analysisResult?.industrial.insideMidc ? (
-                      <>
-                        The coordinates fall inside the notified polygon of <strong>{analysisResult.industrial.industrialArea}</strong>. Under Section 40(1) of the Maharashtra Regional and Town Planning (MRTP) Act, 1966, the Maharashtra Industrial Development Corporation is designated as the Special Planning Authority (SPA). Consequently, local Gram Panchayat or Municipal permissions are superseded for industrial building approvals.
-                      </>
-                    ) : (
-                      <>
-                        The coordinates lie outside any notified MIDC industrial estate. Therefore, general planning regulations under the Maharashtra Land Revenue Code (Sec 44 NA permission) and PMRDA / Municipal Corporation apply.
-                      </>
-                    )}
-                  </p>
-                </div>
-
-                <div className="p-3 rounded-xl border border-slate-200 bg-white">
-                  <h4 className="font-bold text-teal-800 mb-1 flex items-center gap-1.5">
-                    <CheckCircle2 className="h-4 w-4 text-teal-600" />
-                    2. Why MPCB Sub-Regional Office {analysisResult?.environmental?.subRegionalOffice} Applies:
-                  </h4>
-                  <p className="text-slate-600">
-                    Under MPCB Gazette Notification BO/P&amp;L/B-328 dated 2020, administrative environmental jurisdiction for {analysisResult?.administrative?.taluka} Taluka of {analysisResult?.administrative?.district} District is statutorily assigned to <strong>Sub-Regional Office {analysisResult?.environmental?.subRegionalOffice}</strong> under Regional Office {analysisResult?.environmental?.regionalOffice}. Applications for Consent to Establish (CTE) and Consent to Operate (CTO) must be processed via this office.
-                  </p>
-                </div>
-
-                <div className="p-3 rounded-xl border border-slate-200 bg-white">
-                  <h4 className="font-bold text-teal-800 mb-1 flex items-center gap-1.5">
-                    <CheckCircle2 className="h-4 w-4 text-teal-600" />
-                    3. Exemption from NA Conversion (Sec 42A MLRC):
-                  </h4>
-                  <p className="text-slate-600">
-                    {analysisResult?.industrial.insideMidc ? (
-                      <>
-                        Because the land is acquired or leased within a notified MIDC industrial area, <strong>Section 42A of the Maharashtra Land Revenue Code 1966</strong> automatically applies. No separate Non-Agricultural (NA) conversion permission from the Revenue Collector is required, saving the applicant approximately 45–60 days in pre-construction lead time.
-                      </>
-                    ) : (
-                      <>
-                        Standard NA conversion under Section 44 MLRC remains a mandatory prerequisite before construction commences on private agricultural land.
-                      </>
-                    )}
-                  </p>
-                </div>
+              <div className="p-3 rounded-xl border border-slate-200 bg-white">
+                <h4 className="font-bold text-teal-800 mb-1 flex items-center gap-1.5">
+                  <CheckCircle2 className="h-4 w-4 text-teal-600" />
+                  MPCB Office Assignment
+                </h4>
+                <p className="text-slate-600">
+                  Under MPCB Gazette Notification BO/P&L/B-328, {analysisResult?.administrative?.taluka} Taluka is assigned to Sub-Regional Office <strong>{analysisResult?.environmental?.subRegionalOffice}</strong>, Regional Office {analysisResult?.environmental?.regionalOffice}.
+                </p>
               </div>
-
               <div className="p-3 rounded-xl bg-amber-50/50 border border-amber-200 text-amber-800 text-[11px]">
-                <strong>AI Hallucination Guard: </strong>
-                This explanation was generated strictly by formatting deterministic spatial intersections and verified statutory provisions. The model did not guess boundaries or regulatory authorities.
+                <strong>Note: </strong>Jurisdiction is determined deterministically from official GIS data. AI is used only to explain Ã¢â‚¬â€ never to guess boundaries.
               </div>
             </div>
-
             <div className="p-4 border-t border-slate-100 bg-slate-50 flex items-center justify-end">
-              <button
-                onClick={() => setIsAiReasoningOpen(false)}
-                className="px-4 py-1.5 rounded-lg bg-teal-600 text-white font-semibold text-xs hover:bg-teal-700 transition-colors"
-              >
-                Understood
-              </button>
+              <button onClick={() => setIsAiReasoningOpen(false)} className="px-4 py-1.5 rounded-lg bg-teal-600 text-white font-semibold text-xs hover:bg-teal-700 transition-colors">Close</button>
             </div>
-
           </div>
         </div>
       )}
+
     </div>
   );
 }
+

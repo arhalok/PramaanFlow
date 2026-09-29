@@ -92,7 +92,7 @@ export const JUDGE_DEMO_STEPS: JudgeStep[] = [
     title: "9. Coordinated Inspection Optimization",
     persona: "inspector",
     subTab: "inspector",
-    description: "VROOM & OR-Tools multi-inspector route optimizer bundles Sitapura audits, cutting 34% road travel & SLA risk.",
+    description: "Google OR-Tools CP-SAT multi-inspector route optimizer bundles Sitapura audits, cutting 34% road travel & SLA risk.",
     actionHint: "Statutory checklist with mandatory geofenced photographic evidence"
   },
   {

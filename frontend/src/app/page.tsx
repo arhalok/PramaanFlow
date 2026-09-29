@@ -7,16 +7,18 @@ import { GovernmentCommand } from "@/components/GovernmentCommand";
 import { InspectorWorkspace } from "@/components/InspectorWorkspace";
 import { AICopilotModal } from "@/components/AICopilotModal";
 import { JudgeDemoStepper, JUDGE_DEMO_STEPS, JudgeStep } from "@/components/JudgeDemoStepper";
+import { MaharashtraJurisdictionMap } from "@/components/MaharashtraJurisdictionMap";
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<"applicant" | "government" | "inspector">(
+  const [activeTab, setActiveTab] = useState<"applicant" | "government" | "inspector" | "gis-map">(
     "applicant"
   );
+
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
   const [copilotInitialQuery, setCopilotInitialQuery] = useState<string>("");
 
   // Sub-tab orchestration for Applicant & Government
-  const [applicantSubTab, setApplicantSubTab] = useState<string>("graph");
+  const [applicantSubTab, setApplicantSubTab] = useState<string>("home");
   const [governmentSubTab, setGovernmentSubTab] = useState<string>("overview");
 
   // Judge Demo Stepper state
@@ -69,6 +71,15 @@ export default function Home() {
           />
         )}
         {activeTab === "inspector" && <InspectorWorkspace />}
+        {activeTab === "gis-map" && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Location Intelligence Engine</span>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200 font-mono">Maharashtra Geospatial Platform</span>
+            </div>
+            <MaharashtraJurisdictionMap />
+          </div>
+        )}
       </main>
 
       {/* Footer */}
@@ -86,7 +97,7 @@ export default function Home() {
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1.5 text-slate-600">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-              Gemini AI &amp; VROOM Engine Connected
+              Gemini AI &amp; Google OR-Tools CP-SAT Connected
             </span>
             <button
               onClick={() => setIsJudgeStepperOpen(true)}

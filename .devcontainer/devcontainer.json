@@ -1,9 +1,11 @@
 {
   "name": "Regulatory OS - Maharashtra Geospatial Intelligence",
   "image": "mcr.microsoft.com/devcontainers/javascript-node:1-20-bullseye",
-  
-  "forwardPorts": [3000, 5432, 3001],
-  
+  "forwardPorts": [
+    3000,
+    5432,
+    3001
+  ],
   "portsAttributes": {
     "3000": {
       "label": "Regulatory OS Platform",
@@ -18,10 +20,8 @@
       "onAutoForward": "silent"
     }
   },
-
   "postCreateCommand": "npm run setup",
   "postStartCommand": "npm run dev",
-
   "customizations": {
     "vscode": {
       "settings": {
